@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+typedef unsigned char __byte;
+
 typedef union __u8
 {
     uint8_t       u;
@@ -18,7 +20,7 @@ typedef union __u32
     unsigned char c[4];
 } __u32;
 
-struct head_stream
+typedef struct head_stream
 {
     __u8  _sync;
     __u8  _err;
@@ -30,11 +32,11 @@ struct head_stream
     __u8  _indx;
 
     __u8  _size_p;
-};
+} head_stream;
 
-struct buffer_section
+typedef struct buffer_section
 {
-    unsigned char* __pbuf;
-    uint32_t       __cur;
-    uint32_t       __cap;
-};
+    unsigned char* __pbuf; //buffer
+    uint32_t       __cur;  //current position
+    uint32_t       __cap;  //capacity
+} buffer_section;

@@ -27,6 +27,7 @@ const unsigned char* find_start(const unsigned char* str)
     return (NULL);
 }
 
+//return rest
 const unsigned char* add_stream(const unsigned char* str, const uint16_t number_pid, struct buffer_section* section)
 {
      uint8_t size_tmp = SP_SIZE_TAIL; //size payload
@@ -39,12 +40,12 @@ const unsigned char* add_stream(const unsigned char* str, const uint16_t number_
 
     if (hs._sync.u != HEAD_START_BYTE)
     {
-        return p_end ;
+        return (p_end);
     }
 
     if (hs._err.u != 1)
     {
-        return p_end ;
+        return (p_end);
     }
 
     if (hs._pid.u != number_pid)
@@ -69,9 +70,8 @@ const unsigned char* add_stream(const unsigned char* str, const uint16_t number_
 
     memcpy(section->__pbuf + section->__cur, p_start, size_tmp);
     section->__cur += size_tmp;
-    p_start += size_tmp;
 
-    return (p_end - p_start);
+    return (p_end - (p_start + size_tmp));
 }
 
 const unsigned char* parse_packet(const unsigned char* str, struct head_stream* hs)
