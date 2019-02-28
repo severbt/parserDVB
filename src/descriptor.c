@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include "../include/descriptor.h"
 #include "../include/DVB_types.h"
 #include "../include/DVB_table.h"
