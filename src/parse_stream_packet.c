@@ -43,23 +43,38 @@ int add_stream(const unsigned char* str, const uint16_t number_pid, struct buffe
 
     if (hs._sync.u != HEAD_START_BYTE)
     {
+        if (s_courest > 0)
+        {
+            s_bufrest[0] = 0;
+            s_courest = 0;
+        }
         return (-1);
     }
 
     //check error on pack
     if (hs._err.u == 1)
     {
+        if (s_courest > 0)
+        {
+            s_bufrest[0] = 0;
+            s_courest = 0;
+        }
         return (-1);
     }
 
     //check pid
     if (hs._pid.u != number_pid)
     {
+        if (s_courest > 0)
+        {
+            s_bufrest[0] = 0;
+            s_courest = 0;
+        }
         return (-1);
     }
 
     //if is rest add in buffer section
-    if (s_courest != 0)
+    if (s_courest > 0)
     {
         memcpy(section->__pbuf + section->__cur, s_bufrest, s_courest);
         section->__cur += s_courest;
@@ -112,5 +127,3 @@ const unsigned char* parse_packet(const unsigned char* str, struct head_stream* 
 
     return str;
 }
-
-
