@@ -28,50 +28,63 @@ const unsigned char* find_start(const unsigned char* str)
 }
 
 //return rest
-const unsigned char* add_stream(const unsigned char* str, const uint16_t number_pid, struct buffer_section* section)
+int add_stream(const unsigned char* str, const uint16_t number_pid, struct buffer_section* section)
 {
-     uint8_t size_tmp = SP_SIZE_TAIL; //size payload
-     struct head_stream hs = {};
-     const unsigned char* p_start = NULL;
-     const unsigned char* p_end   = str + SP_SIZE_STREAM;
+    static unsigned char s_bufrest[188] = {};
+    static uint8_t       s_courest = 0;
 
-     //parse packet stream
-     p_start = parse_packet(str, &hs);
+    uint8_t size_tmp = SP_SIZE_TAIL; //size payloadize_tmp
+    struct head_stream hs = {};
+    const unsigned char* p_start = NULL;
+    const unsigned char* p_end   = str + SP_SIZE_STREAM;
+
+    //parse packet stream
+    p_start = parse_packet(str, &hs);
 
     if (hs._sync.u != HEAD_START_BYTE)
     {
-        return (p_end);
+        return (-1);
     }
 
-    if (hs._err.u != 1)
+    //check error on pack
+    if (hs._err.u == 1)
     {
-        return (p_end);
+        return (-1);
     }
 
+    //check pid
     if (hs._pid.u != number_pid)
     {
-        return p_end ;
+        return (-1);
     }
 
-    //check memory!!!!
+    //if is rest add in buffer section
+    if (s_courest != 0)
+    {
+        memcpy(section->__pbuf + section->__cur, s_bufrest, s_courest);
+        section->__cur += s_courest;
+
+        s_bufrest[0] = 0;
+        s_courest = 0;
+    }
+
     if (hs._payl.u == 1)
     {
         size_tmp = hs._size_p.u;
+        s_courest = p_end - (p_start + size_tmp);
+        memcpy(s_bufrest, p_start + size_tmp, s_courest);
+        s_bufrest[s_courest] = 0;
     }
 
     if ((section->__cur + size_tmp) > (section->__cap) )
     {
-        section->__cap = (section->__cur + size_tmp)*2;
-        unsigned char* _p = allocate_uc(section->__cap);
-        memcpy(_p, section->__pbuf, section->__cur);
-        clear_uc(section->__pbuf);
-        section->__pbuf = _p;
+        return (-1);
     }
 
     memcpy(section->__pbuf + section->__cur, p_start, size_tmp);
     section->__cur += size_tmp;
 
-    return (p_end - (p_start + size_tmp));
+    return 1;
 }
 
 const unsigned char* parse_packet(const unsigned char* str, struct head_stream* hs)

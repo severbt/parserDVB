@@ -36,7 +36,7 @@ typedef struct head_stream
 
 typedef struct buffer_section
 {
-    unsigned char* __pbuf; //buffer
+    unsigned char  __pbuf[1024]; //buffer
     uint32_t       __cur;  //current position
     uint32_t       __cap;  //capacity
 } buffer_section;
