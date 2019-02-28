@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 //Stream Packet size
@@ -30,7 +32,13 @@ const uint16_t SIZE_SECTION_NIT = 1021;
 
 //MASK section NIT
 const uint16_t MASK_SECTION_NIT_SYNTAX_I = 0x8000;
-const uint16_t MASK_SECTION_NIT_LENGTH_C = 0x3000; //Ckeck 2 bits
-const uint16_t MASK_SECTION_NIT_LENGTH   = 0x3FFF;
+
+const uint16_t MASK_SECTION_NIT_LENGTH   = 0x03FF;
+const uint8_t  MASK_SECTION_VERSION_NUM  = 0x3E;
+const uint16_t MASK_SECTION_NET_LEN      = 0x0FFF;
+
+
+const uint8_t  SECTION_VAL_NUMBER_MAX = 63;
+
 
 

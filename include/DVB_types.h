@@ -1,20 +1,22 @@
+#pragma once
+
 #include <stdint.h>
 
 typedef unsigned char __byte;
 
-typedef union __u8
+typedef union __uu8
 {
     uint8_t       u;
     unsigned char c[1];
 } __u8;
 
-typedef union __u16
+typedef union __uu16
 {
     uint16_t      u;
     unsigned char c[2];
 } __u16;
 
-typedef union __u32
+typedef union __uu32
 {
     uint32_t      u;
     unsigned char c[4];

@@ -1,3 +1,4 @@
+#pragma once
 
 void swap_byte(unsigned char* v1, unsigned char* v2);
 

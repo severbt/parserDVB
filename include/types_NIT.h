@@ -1,3 +1,5 @@
+#pragma once
+
 #include "table_descriptors.h"
 
 typedef struct nit_section
@@ -16,12 +18,11 @@ typedef struct nit_section
     __u8   _resf1; //reserved future use
 
     __u16  _ndlen; //network descriptor length
-    nndesc _dn;
-    _byte* _pn;
+    datad _d1;
 
     __u8  _resf2; //reserved future use
     __u16 _tstrlen; //transport stream loop length
-    tsloop* _tl;
+    tsloop _tl;
 
     __u32 _CRC_32;
 
