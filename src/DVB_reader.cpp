@@ -1,13 +1,13 @@
+#include <string>
+#include <iostream>
+
 #include "../include/DVB_reader.h"
 
-#include <malloc.h>
-#include <string.h>
-#include <io.h>
-#include <iostream>
+using namespace DVB;
 
 const uint32_t DATA_SIZE = 4096;
 
-DVBReader::DVBReader()
+DVB_reader::DVB_reader()
 	:m_file(NULL)
 	,m_data_file(NULL)
 	,m_data_size(0)
@@ -18,7 +18,7 @@ DVBReader::DVBReader()
 {
 }
 
-DVBReader::~DVBReader()
+DVB_reader::~DVB_reader()
 {
 	Close();
 
@@ -29,7 +29,7 @@ DVBReader::~DVBReader()
 	}
 }
 
-bool DVBReader::Open(const char *namefile )
+bool DVB_reader::Open(const char *namefile )
 {
 	bool result = false;
 
@@ -53,49 +53,26 @@ bool DVBReader::Open(const char *namefile )
 	return result;
 }
 
-void DVBReader::Close()
+void DVB_reader::Close()
 {
 	if (m_file != NULL)
 	{
 		fclose(m_file);
-		m_file = NULL;
+		m_file = NULL;	uint32_t       m_data_sold;    //длина файла
 	}
 }
 
-bool DVBReader::GetNextSection(unsigned char *buf, const uint8_t bufsize)
+bool DVB_reader::RunParser()
 {
-	if (bufsize < 2)
+	while (ReadFile())
 	{
-		return false;
-	}
-
-	//если строка еще не вся записана то записываем её
-	/*if (m_part)
-	{
-		m_part = StrCopy(buf, bufsize);
-		return true;
-	}*/
-
-	while (m_data_size || ReadFile())
-	{
-		//GetLine();
-		//if (CheckStr(m_start, m_filter))
-		//{
-		//	m_part = StrCopy(buf, bufsize);
-		//	return true;
-		//}
+	    m_parser.addStreams(m_data_file, m_data_file + m_data_size);
 	}
 
 	return false;
 }
 
-bool DVBReader::IsPart() const
-{
-	return m_part;
-}
-
-
-bool DVBReader::ReadFile()
+bool DVB_reader::ReadFile()
 {
 	bool result = false;
 
@@ -107,63 +84,6 @@ bool DVBReader::ReadFile()
 
 		m_data_file[m_data_size] = '\n';
 
-		result = true;
-	}
-
-	return result;
-}
-
-void DVBReader::GetLine()
-{
-	if (m_end == NULL)
-	{
-		//m_end = m_start = m_data_file;
-	}
-	else
-	{
-		m_start = m_end + 1;
-	}
-
-	while (*++m_end != '\n');
-
-	if (*(m_end - 1) == '\r')
-	{
-		*(m_end - 1) = 0;
-	}
-	else
-	{
-		*m_end = 0;
-	}
-
-	uint32_t def = m_end - m_start + 1;
-	if (def > m_data_size)
-	{
-		m_data_size = 0;
-	}
-	else
-	{
-		m_data_size -= def;
-	}
-}
-
-/****************************************************************/
-//StrCopy() - копирует строку в буфер.
-/****************************************************************/
-bool DVBReader::StrCopy(char *buf, const int bufsize)
-{
-	bool result = false;
-
-	int len = m_end - m_start;
-	if (bufsize > len)
-	{
-		strncpy(buf, m_start, len);
-		buf[len] = '\0';
-	}
-	else
-	{
-		strncpy(buf, m_start, bufsize - 1);
-		buf[bufsize - 1] = '\0';
-		m_start += bufsize - 1;
 		result = true;
 	}
 

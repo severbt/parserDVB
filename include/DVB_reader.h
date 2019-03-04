@@ -3,36 +3,36 @@
 #include <stdio.h>
 #include <stdint.h>
 
-class DVBReader
+#include "DVB_parser.h"
+
+namespace DVB
+{
+class DVB_reader
 {
 public:
-			DVBReader();
-			~DVBReader();
+			DVB_reader();
+			~DVB_reader();
 	bool	Open( const char *namefile );
 	void	Close();
-	bool	GetNextSection(unsigned char *buf, const uint8_t bufsize);
-
-	bool    IsPart() const;
+	bool	RunParser();
 
 private:
 	//эти функции можно было вынести и в .cpp
 	bool    ReadFile();
-	bool    CheckStr(const char* str,
-					 const char* sub);
-	bool    StrCopy(char *buf,
-		            const int bufsize);
-	void    GetLine();
 
 private:
 	FILE*        m_file;         //дескриптор файла
 
+	_byte*      m_data_file;    //буфер данных (часть файла)
+	_u32_t      m_data_size;    //длина данных
+	_u32_t      m_data_sold;    //длина файла old
 
-	unsigned char* m_data_file;    //буфер данных (часть файла)
-	uint32_t       m_data_size;    //длина данных
-	uint32_t       m_data_sold;    //длина файла
-
-	char*        m_start;        //начало строки
-	char*        m_end;          //конец строки
-	bool         m_part;         //флаг, который определяет часть ли строки
+	_byte*      m_start;        //начало строки
+	_byte*      m_end;          //конец строки
+	bool        m_part;         //флаг, который определяет часть ли строки
+	DVB_parser  m_parser;
 };
+
+}
+
 

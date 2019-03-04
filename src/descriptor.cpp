@@ -1,4 +1,4 @@
-#include <stddef.h>
+/*#include <stddef.h>
 
 #include "../include/descriptor.h"
 #include "../include/DVB_types.h"
@@ -13,7 +13,7 @@ void clear_list_desc(datad* p)
 
     if ( p->_buf != NULL)
     {
-        free(p->_buf);
+       free(p->_buf);
     }
 
     datad* _next = NULL;
@@ -78,7 +78,7 @@ int parse_descriptor(unsigned char* str, const uint16_t n, datad* p)
             return -1;
         }
 
-        memcpy(next_p->_buf, str, next_p->_len.u);
+        memcpy(next_p->_buf, str, next_p->_lensection.u);
         str += next_p->_len.u;
 
         if (_len < n)
@@ -102,7 +102,7 @@ int parse_descriptor(unsigned char* str, const uint16_t n, datad* p)
 }
 
 int parse_trans_loop(unsigned char* str, const uint16_t n, tsloop* p)
-{
+{section
     int32_t len_all = 0;
     int32_t len_parse = 0;
     tsloop* p_next = p;
@@ -149,4 +149,4 @@ int parse_trans_loop(unsigned char* str, const uint16_t n, tsloop* p)
     }while(1);
 
     return (len_all);
-}
+}*/

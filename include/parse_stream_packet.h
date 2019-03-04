@@ -2,7 +2,12 @@
 
 #include "../include/DVB_types.h"
 
-const unsigned char* find_start(const unsigned char* str);
-int                  add_stream(const unsigned char* str, const uint16_t number_pid, struct buffer_section* section);
-const unsigned char* parse_packet(const unsigned char* str, struct head_stream* hs);
+namespace DVB
+{
+    const _byte* findStartPack(const _byte* str, const _byte* _end);
+    const bool getPacket(const _byte* _start, const _byte* _end, buffer_pack& _pack);
+   // bool                 getPacketSection(const _byte* str, stream_packet& sp);
+}
+
+
 

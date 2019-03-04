@@ -1,47 +1,56 @@
-//#include <stdio.h>
-
-//#include "include/parse_stream_packet.h"
-
 #include "include/DVB_reader.h"
+
 #include <iostream>
-int main()
+using namespace DVB;
+
+int main(int argc, char **argv)
 {
-    /*//test1
+	int desfile    = -1;
+	int sizefile   = -1;
+	int read_bytes = -1;
+	char* buffer   = NULL;
+
+	DVB_reader reader;
+
+	//check arguments
+    //if (argc != 2)
+	//{
+    //    printf("Name file is error or null\n");
+	//	return -1;
+    //}
+
+    char name_file[] = "tablas_DTH.ts";
+    if ( reader.Open(name_file))
+    //if ( reader.Open(argv[1]))
     {
-    unsigned char str[] = { 0x47, 5, 8, 9, '10', '\0' };
-    const unsigned char* tmp;
-    tmp = find_start(str);
-    printf("stream =%s\n", tmp);
-    }
+		printf("Error open file\n");
+		return -1;
+	}
 
-    {
-    //test2
-    char* p = malloc(10);
-    unsigned char str[] = { 0x47, 0xE0, 0x10, 0xFF };
-    //parse_packet(str, 0x0010, p);
-    free(p);
+	reader.RunParser();
 
+	/*
+	//allocate memory
+	buffer = (char*)calloc(desfile, 1);
+	if (buffer == NULL)
+	{
+		printf("Error calloc\n");
+		close(desfile);
+		return -1;
+	}
 
-    //unsigned char str[] = { 0x47, 5, 8, 9, '10', '\0' };
-
-
-    //unsigned char str[] = { 0x47, 5, 8, 9, '10', '\0' };
-    }*/
-
-    DVBReader r;
-    if ( r.Open("tmp.txt") )
-    {
-        std::cout<<"not open file\n";
-    }
-
-    unsigned char buf[10000] = {};
-    uint8_t f = 9999;
-    r.GetNextSection(buf, f);
+	//read file
+	read_bytes = read_file(desfile, buffer, sizefile);
+	if (read_bytes == -1)
+	{
+		printf("Error read file\n");
+		close(desfile);
+		free(buffer);
+		return -1;
+	}
 
 
-
-
-
-
-    return 0;
+	close(desfile);
+	free(buffer);*/
+	return std::cin.get(), 0;
 }
