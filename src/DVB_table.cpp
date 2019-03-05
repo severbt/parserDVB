@@ -1,4 +1,4 @@
-#include "DVB_table.h"
+#include "../include/DVB_table.h"
 
 DVB_table::DVB_table()
 {

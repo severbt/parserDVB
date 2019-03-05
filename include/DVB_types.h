@@ -89,14 +89,31 @@ typedef struct head_section
     __u8   _sec_indi;
     __u8   _reserv;
     __u16  _slen;
+    __u16  _nid_;
+    __u8   _vnumb;
+    __u8   _snumb;
+    __u8   _lsnumb;
 }hsection;
 
-struct buffer_pack
+
+struct ts_pack
+{
+    std::string _buf;
+       _u16_t   _pid;
+
+    void clear()
+    {
+        _buf.resize(0);
+        _pid = 0;
+    }
+};
+
+/*struct ts_pack
 {
     _byte     _b[376]; // 188 + 188
     _u16_t    _s;       // size
     _u16_t   _pid;
-};
+};*/
 
 struct buffer_section
 {

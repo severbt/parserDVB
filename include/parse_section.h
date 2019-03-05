@@ -4,13 +4,21 @@
 
 namespace DVB
 {
-    const int sectionIsFull(buffer_section& _sect);
+    class DVB_parse_section
+    {
+    public:
+        DVB_parse_section();
 
-    void clear_section_garbage(const _u16_t _len, buffer_section& sect);
-    //const unsigned char* get_section(const unsigned char* str, const uint16_t number_pid, struct buffer_section* section);
+        const bool addPack( const ts_pack& );
+    private:
 
-    void printSectionNit(const _u16_t _len, const buffer_section& sect);
-
+        const bool isPidNIT( const _u16_t _pid);
+        const bool sectionIsFull(buffer_section& _sect);
+        const bool parseHeadSection(hsection& hs);
+    private:
+        std::string m_buffer;
+        _u16_t      m_old_pid;
+    };
 }
 
 
