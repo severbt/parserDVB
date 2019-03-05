@@ -27,7 +27,7 @@ const bool DVB_parse_section::addPack( const ts_pack& _pack )
     result = parseHeadSection(hs);
     if ( result)
     {
-        m_buffer.erase(0, hs._slen.u);
+        m_buffer.erase(0, (hs._slen.u + 3));
     }
     return result;
 }
@@ -56,8 +56,8 @@ const bool DVB_parse_section::parseHeadSection(hsection& hs)
     hs._nid_.c[1] = m_buffer[3];
 
     hs._vnumb.u   = (m_buffer[5] & 0x3E) >> 1;
-    hs._snumb.u   = m_buffer[6];
-    hs._lsnumb.u  = m_buffer[7];
+    hs._snumb.u   = (_u8_t)m_buffer[6];
+    hs._lsnumb.u  = (_u8_t)m_buffer[7];
 
     printf(" Table id : %x\n"
            " Section length : %d\n"

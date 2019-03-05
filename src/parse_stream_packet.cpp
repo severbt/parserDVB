@@ -128,12 +128,15 @@ const bool DVB_parse_stream::checkPack(const head_pack& hp, ts_pack& o_pack)
 
     if (hp._payl.u == 1)
     {
-        o_pack._buf.append(m_stream.data() + 5, hp._size_p.u);
-        m_stream.erase(0, hp._size_p.u + 5);
-
         tmp_size -= hp._size_p.u + 5;
-        m_reststream.append(m_stream.data(), tmp_size);
-        m_stream.erase(0, tmp_size);
+        o_pack._buf.append(m_stream.data() + 5, tmp_size);
+        m_stream.erase(0, tmp_size + 5);
+
+        if ( hp._size_p.u != 0)
+        {
+           m_reststream.append(m_stream.data(), hp._size_p.u);
+            m_stream.erase(0, hp._size_p.u);
+        }
     }
     else
     {
