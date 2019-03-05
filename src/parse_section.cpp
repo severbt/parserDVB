@@ -7,6 +7,7 @@ using namespace DVB;
 DVB_parse_section::DVB_parse_section()
     :m_old_pid(-1)
     {
+        m_buffer.reserve(2048);
     }
 
 const bool DVB_parse_section::addPack( const ts_pack& _pack )
@@ -17,6 +18,7 @@ const bool DVB_parse_section::addPack( const ts_pack& _pack )
     result = isPidNIT(_pack._pid);
     if ( !result)
     {
+        m_buffer.resize(0);
         return result;
     }
 
@@ -39,10 +41,11 @@ const bool DVB_parse_section::parseHeadSection(hsection& hs)
 {
     bool status = false;
 
-    hs._tabid.u = m_buffer[0];
+    hs._tabid.u = (_u8_t)m_buffer[0];
 
-    hs._slen.c[0] = m_buffer[2];
-    hs._slen.c[1] = m_buffer[1] & 0x0F;
+    hs._slen.u = (((_u8_t)m_buffer[1] & 0x0F) << 8) | (_u8_t)m_buffer[2];
+    //hs._slen.c[0] = m_buffer[2];
+    //hs._slen.c[1] = m_buffer[1] & 0x0F;
 
     if (hs._slen.u > 1024)
     {

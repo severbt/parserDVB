@@ -29,9 +29,7 @@ DVB_parser::~DVB_parser()
 bool DVB_parser::addStreams(const _byte* _start_str, const _byte* _end_str)
 {
     ts_pack         pack = {};        //current pack
-    int                 result = -1;
-
-    //auto its = m_sections.end();
+    int             result = false;
 
     if ( _start_str == NULL || _end_str == NULL)
     {
@@ -39,8 +37,19 @@ bool DVB_parser::addStreams(const _byte* _start_str, const _byte* _end_str)
     }
 
     m_pars_stream.addStream(_start_str, _end_str);
-    while( m_pars_stream.getPack( pack ) )
+    while(1)
     {
-        m_pars_section.addPack(pack);
+        result = m_pars_stream.getPack(pack);
+        if ( result == -1)
+        {
+            break;
+        }
+        else if ( result == 1)
+        {
+            m_pars_section.addPack(pack);
+        }
     }
+
+    result = true;
+    return result;
 }

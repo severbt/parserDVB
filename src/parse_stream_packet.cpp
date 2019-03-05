@@ -36,18 +36,22 @@ void DVB_parse_stream::addStream(const _byte* start_str, const _byte* end_str)
     m_stream.append((char*)start_str, end_str - start_str);
 }
 
-const bool DVB_parse_stream::getPack(ts_pack& _pack)
+const int DVB_parse_stream::getPack(ts_pack& _pack)
 {
-    bool result = false;
+    int      result = -1;
     hpack    hp = {};
     size_t   pos = string::npos;
 
-    pos = m_stream.find(HEAD_START_BYTE, pos);
+    pos = findStartPack();
     if ( pos == string::npos)
     {
         m_stream.resize(0);
         clearRest();
         return result;
+    }
+    else if ( pos > 0)
+    {
+        m_stream.erase(0, pos);
     }
 
     if ( m_stream.size() < SP_SIZE_STREAM)
@@ -56,25 +60,49 @@ const bool DVB_parse_stream::getPack(ts_pack& _pack)
     }
 
     parsePack(hp);
-    result = checkPack(hp, _pack);
+    if (checkPack(hp, _pack))
+    {
+        result = 1;
+    }
+    else
+    {
+        result = 0;
+    }
 
     return result;
 }
 
-void DVB_parse_stream::parsePack(head_pack& hs)
+const size_t DVB_parse_stream::findStartPack()
 {
-    hs._sync.u = m_stream[0];
+    size_t pos = 0;
+    size_t len = m_stream.size();
 
-    hs._err.u =  (m_stream[1] & MASK_HEAD_ERROR_INDICATOR) >> 7;
-    hs._payl.u = (m_stream[1] & MASK_HEAD_PAYLOAD_START) >> 6;
-    hs._prio.u = (m_stream[1] & MASK_HEAD_TRANSPORT_PRIORITY)>>5;
-
-    hs._pid.c[0] = m_stream[1] & 0x1F;
-    hs._pid.c[1] = m_stream[2] ;
-
-    if (hs._payl.u == 1)
+    while(pos < len)
     {
-        hs._size_p.u = hs._prio.u = m_stream[4];
+        if (HEAD_START_BYTE == (_u8_t)m_stream[pos])
+        {
+            return pos;
+        }
+        ++pos;
+    }
+
+    pos = string::npos;
+    return pos;
+}
+
+void DVB_parse_stream::parsePack(head_pack& hp)
+{
+    hp._sync.u = (_u8_t)m_stream[0];
+
+    hp._err.u =  ((_u8_t)m_stream[1] & MASK_HEAD_ERROR_INDICATOR) >> 7;
+    hp._payl.u = ((_u8_t)m_stream[1] & MASK_HEAD_PAYLOAD_START) >> 6;
+    hp._prio.u = ((_u8_t)m_stream[1] & MASK_HEAD_TRANSPORT_PRIORITY)>>5;
+
+    hp._pid.u = (((_u8_t)m_stream[1] & 0x1F)<<8) | (_u8_t)m_stream[2];
+
+    if (hp._payl.u == 1)
+    {
+        hp._size_p.u  = (_u8_t)m_stream[4];
     }
 }
 
@@ -111,6 +139,7 @@ const bool DVB_parse_stream::checkPack(const head_pack& hp, ts_pack& o_pack)
     {
         o_pack._buf.append(m_stream.data() + 4, SP_SIZE_TAIL);
         m_stream.erase(0, SP_SIZE_TAIL);
+        m_reststream.resize(0);
     }
 
     result = true;

@@ -108,13 +108,6 @@ struct ts_pack
     }
 };
 
-/*struct ts_pack
-{
-    _byte     _b[376]; // 188 + 188
-    _u16_t    _s;       // size
-    _u16_t   _pid;
-};*/
-
 struct buffer_section
 {
     _byte       _b[1400]; // 1024 + 188 + 188

@@ -11,10 +11,6 @@ DVB_reader::DVB_reader()
 	:m_file(NULL)
 	,m_data_file(NULL)
 	,m_data_size(0)
-	,m_data_sold(0)
-	,m_start(NULL)
-	,m_end(NULL)
-	,m_part(false)
 {
 }
 
@@ -58,7 +54,7 @@ void DVB_reader::Close()
 	if (m_file != NULL)
 	{
 		fclose(m_file);
-		m_file = NULL;	uint32_t       m_data_sold;    //длина файла
+		m_file = NULL;
 	}
 }
 
@@ -79,10 +75,7 @@ bool DVB_reader::ReadFile()
 	m_data_size = fread(m_data_file, 1, DATA_SIZE, m_file);
 	if ( m_data_size > 0)
 	{
-		m_data_sold = m_data_size;
-		//если это не конец строки, нужно найти.
-
-		m_data_file[m_data_size] = '\n';
+        m_data_file[m_data_size] = 0;
 
 		result = true;
 	}

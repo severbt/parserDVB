@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
 
 #include "DVB_parser.h"
 
@@ -17,19 +16,14 @@ public:
 	bool	RunParser();
 
 private:
-	//эти функции можно было вынести и в .cpp
 	bool    ReadFile();
 
 private:
-	FILE*        m_file;         //дескриптор файла
+	FILE*        m_file;
 
-	_byte*      m_data_file;    //буфер данных (часть файла)
-	_u32_t      m_data_size;    //длина данных
-	_u32_t      m_data_sold;    //длина файла old
+	_byte*      m_data_file;
+	_u32_t      m_data_size;
 
-	_byte*      m_start;        //начало строки
-	_byte*      m_end;          //конец строки
-	bool        m_part;         //флаг, который определяет часть ли строки
 	DVB_parser  m_parser;
 };
 

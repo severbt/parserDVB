@@ -17,10 +17,10 @@ namespace DVB
         void       addStream(const _byte* str, const _u32_t size_buf);
         void       addStream(const _byte* start_str, const _byte* end_str);
 
-        const bool getPack(ts_pack& o_pack);
+        const int  getPack(ts_pack& o_pack);
     private:
 
-        const size_t findStartPack(const _byte* str, const _byte* _end);
+        const size_t findStartPack();
         void         parsePack(head_pack& hs);
         const bool   checkPack(const head_pack& hs, ts_pack& o_pack);
         void         clearRest();

@@ -1,6 +1,7 @@
 #include "include/DVB_reader.h"
 
 #include <iostream>
+
 using namespace DVB;
 
 int main(int argc, char **argv)
@@ -29,28 +30,5 @@ int main(int argc, char **argv)
 
 	reader.RunParser();
 
-	/*
-	//allocate memory
-	buffer = (char*)calloc(desfile, 1);
-	if (buffer == NULL)
-	{
-		printf("Error calloc\n");
-		close(desfile);
-		return -1;
-	}
-
-	//read file
-	read_bytes = read_file(desfile, buffer, sizefile);
-	if (read_bytes == -1)
-	{
-		printf("Error read file\n");
-		close(desfile);
-		free(buffer);
-		return -1;
-	}
-
-
-	close(desfile);
-	free(buffer);*/
 	return std::cin.get(), 0;
 }
