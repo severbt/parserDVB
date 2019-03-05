@@ -135,7 +135,7 @@ const bool DVB_parse_stream::checkPack(const head_pack& hp, ts_pack& o_pack)
         if ( hp._size_p.u != 0)
         {
            m_reststream.append(m_stream.data(), hp._size_p.u);
-            m_stream.erase(0, hp._size_p.u);
+           m_stream.erase(0, hp._size_p.u);
         }
     }
     else

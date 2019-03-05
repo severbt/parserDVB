@@ -1,6 +1,8 @@
 #pragma once
 
 #include "DVB_types.h"
+#include <map>
+#include <list>
 
 namespace DVB
 {
@@ -18,6 +20,8 @@ namespace DVB
     private:
         std::string m_buffer;
         _u16_t      m_old_pid;
+
+        std::map< _u8_t, std::list<head_section>> m_tables;
     };
 }
 
