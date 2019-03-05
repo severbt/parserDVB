@@ -1,10 +1,58 @@
-/*#include <stddef.h>
+#include <stddef.h>
 
 #include "../include/descriptor.h"
 #include "../include/DVB_types.h"
-#include "../include/DVB_table.h"
 
-void clear_list_desc(datad* p)
+using namespace std;
+
+void tableDesc( const _u8_t val );
+void network_name_desc(const char* _p, size_t l);
+
+int DVB::parseDescriptor(const string& str, const _u8_t pos, const _u16_t len)
+{
+    int result = -1;
+
+    _u16_t  tmp_l = len;
+    _u8_t tag     = 0;
+    _u16_t size_d = 0;
+
+    int i = 0;
+    do
+    {
+        tag = (_u8_t)str[pos + i];
+        size_d = (_u8_t)str[pos + i + 1];
+        i += 2;
+        switch(tag)
+        {
+            case 0x40:
+            {
+                network_name_desc(str.data()+i, size_d);
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+        tmp_l -= size_d;
+    }while( tmp_l );
+
+    return result;
+
+}
+
+void network_name_desc(const char* _p, size_t l)
+{
+    unsigned char uch = 0;
+    printf("Network name : ");
+    for(size_t i = 0; i < l; ++i)
+    {
+        uch = _p[i++];
+        printf("%c", uch);
+    }
+    printf("\n");
+}
+/*void clear_list_desc(datad* p)
 {
     if ( p == NULL)
     {

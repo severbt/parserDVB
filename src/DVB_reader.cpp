@@ -41,9 +41,9 @@ bool DVB_reader::Open(const char *namefile )
 
 	Close();
 	m_file = fopen(namefile, "rb");
-	if (m_file == NULL)
+	if (m_file != NULL)
 	{
-		return result;
+		result = true;
 	}
 
 	return result;

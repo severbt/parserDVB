@@ -2,5 +2,8 @@
 
 #include "table_descriptors.h"
 
-int parse_descriptor(unsigned char* str, const uint16_t n, datad* p);
-int parse_trans_loop(unsigned char* str, const uint16_t n, tsloop* p);
+namespace DVB
+{
+    int parseDescriptor(const std::string& str, const _u8_t pos, const _u16_t len);
+
+}

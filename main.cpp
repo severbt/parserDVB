@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     //}
 
     char name_file[] = "tablas_DTH.ts";
-    if ( reader.Open(name_file))
+    if ( !reader.Open(name_file))
     //if ( reader.Open(argv[1]))
     {
 		printf("Error open file\n");

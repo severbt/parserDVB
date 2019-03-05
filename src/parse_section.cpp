@@ -1,6 +1,7 @@
 #include "../include/parse_section.h"
 
-#include <cstring>
+//#include <cstring>
+#include "../include/descriptor.h"
 
 using namespace DVB;
 using namespace std;
@@ -40,7 +41,8 @@ const bool DVB_parse_section::isPidNIT( const _u16_t _pid)
 
 const bool DVB_parse_section::parseHeadSection(hsection& hs)
 {
-    bool status = false;
+    bool result   = false;
+    _u16_t tmplen = 0;
 
     hs._tabid.u = (_u8_t)m_buffer[0];
 
@@ -50,7 +52,7 @@ const bool DVB_parse_section::parseHeadSection(hsection& hs)
 
     if (hs._slen.u > 1024)
     {
-        return status;
+        return result;
     }
 
     hs._nid_.c[0] = m_buffer[4];
@@ -65,11 +67,19 @@ const bool DVB_parse_section::parseHeadSection(hsection& hs)
         return true;
     }
 
-    printf(" Table id : %x\n"
+    printf(" Table id       : %x\n"
            " Section length : %d\n"
-           " Network id : %d\n"
+           " Network id     : %d\n"
            " Version number : %d\n"
            " Section number : %d/%d\n\n", hs._tabid.u, hs._slen.u, hs._nid_.u, hs._vnumb.u, hs._snumb.u, hs._lsnumb.u);
+
+    tmplen = (((_u8_t)m_buffer[8] & 0x0F) << 8) | (_u8_t)m_buffer[9];
+    if (tmplen >  hs._slen.u)
+    {
+        return result;
+    }
+
+   //parseDescriptor(m_buffer, 9,tmplen);
 
     auto its = m_tables.find(hs._tabid.u);
     if ( its == m_tables.end())

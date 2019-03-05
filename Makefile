@@ -4,12 +4,12 @@
 PROGRAM_NAME=parse
 
 #List of sources files
-SOURCE_FILES:=$(wildcard ./*.c)
-OBJECT_FILES:=$(foreach tmp, $(SOURCE_FILES), $(tmp:.c=.o))
+SOURCE_FILES:=$(wildcard ./src/*.cpp)
+OBJECT_FILES:=$(foreach tmp, $(SOURCE_FILES), $(tmp:.cpp=.o))
 
 #Compiler
-CC=gcc
-C_FLAGS=-Wall -I./
+CC=g++
+C_FLAGS= -g -std=C++11 -Wall -I./
 CLEAN=rm -rf
 
 QUIET ?= @
