@@ -161,44 +161,29 @@ void satellite_delivery_sys_desc(const string& str)
     _u8_t  modulation_typ          =  (_u8_t)str[6] & 0x03;
     _u8_t  symbol_rate[7]          = {};
     _u8_t  FEC_inner               =  (_u8_t)str[10] & 0x0F;
-    _u8_t i                        = 0;
 
-
-    for( _u8_t j = 0; j < 4; j += 1)
+    for( _u8_t i = 0; i < 8; ++i)
     {
-        for(_u8_t i = ; i < 2; i += 1)
-        {
-            if ( i == 0)
-                frequency[i] = (_u8_t)str[j] & 0xF0 >> 4;
-            else
-                frequency[i] =  (_u8_t)str[j] & 0x0F;
-        }
+		frequency[i] = (_u8_t)str[i/2] & ((i%2 == 0)?(0xF0 >> 4):(0x0F));
     }
 
-    for( _u8_t j = 4; j < 6; j += 1)
+	for( _u8_t i = 0; i < 4; ++i)
     {
-        i = 2*j;
-        orbital_position[i]   =  (_u8_t)str[j] & 0xF0 >> 4;
-        orbital_position[i+1] =  (_u8_t)str[j] & 0x0F;
+        orbital_position[i] = (_u8_t)str[4+i/2] & ((i%2 == 0)?(0xF0 >> 4):(0x0F));
     }
-
-
-    //_u32_t frequency        = ((_u8_t)str[0] << 24) | ((_u8_t)str[1] << 16) | ((_u8_t)str[2] << 8) | (_u8_t)str[3];
-
-
-    for( _u8_t j = 7; j < 10; j += 1)
+	
+	for( _u8_t i = 0; i < 7; ++i)
     {
-        i = 2 * j;
-        symbol_rate[i]   =  (_u8_t)str[j] & 0xF0 >> 4;
-        symbol_rate[i+1] =  (_u8_t)str[j] & 0x0F;
+		symbol_rate[i] = (_u8_t)str[7+i/2] & ((i%2 == 0)?(0xF0 >> 4):(0x0F));
     }
-    symbol_rate[6]
-
-
-
-
-    _u32_t symbol_rate      = ((_u8_t)str[7] << 20) | ((_u8_t)str[8] << 12) | ((_u8_t)str[9] << 4) | ((_u8_t)str[10] & 0xF0) >> 4;
-    _u8_t  FEC_inner        =  (_u8_t)str[10] & 0x0F;
-
+	
+	printf("	frequency : %d%d%d,%d%d%d%d%d GHz\n", frequency[0]
+												    , frequency[1]
+												    , frequency[2]
+												    , frequency[3]
+												    , frequency[4]
+												    , frequency[5]
+												    , frequency[6]
+												    , frequency[7]);
 }
 
