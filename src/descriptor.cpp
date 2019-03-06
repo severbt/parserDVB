@@ -6,195 +6,137 @@
 using namespace std;
 
 void tableDesc( const _u8_t val );
-void network_name_desc(const char* _p, size_t l);
+void network_name_desc(const string& str);
+void service_list_desc(const string& str);
 
-int DVB::parseDescriptor(const string& str, const _u8_t pos, const _u16_t len)
+int DVB::parseTransportStream(const string& str)
+{
+    _u16_t idtrans = 0;
+    _u16_t idorigin = 0;
+    _u16_t translen = 0;
+
+    _u16_t i = 0;
+    const _u16_t lmax = str.length();
+
+    do
+    {
+        idtrans = (((_u8_t)str[i]) << 8) | (_u8_t)str[i+1];
+        idorigin = (((_u8_t)str[i+2]) << 8) | (_u8_t)str[i+3];
+        translen = (((_u8_t)str[i+4] & 0x0F) << 8) | (_u8_t)str[i+5];
+
+        i += 6;
+        if ( translen > lmax)
+        {
+            break;
+        } else if ( translen > 0)
+        {
+            printf( "  transport stream id : %d\n"
+                    "  original network id : %d\n"
+                    "  transport descriptor len : %d\n", idtrans, idorigin,  translen);
+
+            parseDescriptor(str.substr(i, translen));
+            i += translen;
+        }
+    }while( i < lmax);
+}
+
+int DVB::parseDescriptor(const string& str)
 {
     int result = -1;
 
-    _u16_t  tmp_l = len;
     _u8_t tag     = 0;
     _u16_t size_d = 0;
+    _u16_t size_str = str.length();
 
-    int i = 0;
+    _u16_t i = 0;
     do
     {
-        tag = (_u8_t)str[pos + i];
-        size_d = (_u8_t)str[pos + i + 1];
+        tag    = (_u8_t)str[i];
+        size_d = (_u8_t)str[i + 1];
+
         i += 2;
-        switch(tag)
+        if (size_d > size_str)
         {
-            case 0x40:
-            {
-                network_name_desc(str.data()+i, size_d);
-                break;
-            }
-            default:
-            {
-                break;
-            }
+            break;
         }
-        tmp_l -= size_d;
-    }while( tmp_l );
+        else if (size_d > 0)
+        {
+            printf("  tad descriptor    : %x\n"
+                   "  length descriptor : %u\n",tag, size_d);
+
+            switch(tag)
+            {
+                case 0x40:
+                {
+                    network_name_desc(str.substr(i, size_d));
+                    break;
+                }
+                case 0x41:
+                {
+                    service_list_desc(str.substr(i, size_d));
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+
+            i += size_d;
+        }
+
+    }while( i < size_str );
 
     return result;
 
 }
 
-void network_name_desc(const char* _p, size_t l)
+void network_name_desc(const string& str)
 {
-    unsigned char uch = 0;
-    printf("Network name : ");
-    for(size_t i = 0; i < l; ++i)
+    _u16_t len = str.length();
+
+    printf("        Network name : ");
+
+    for(size_t i = 0; i < len; ++i)
     {
-        uch = _p[i++];
-        printf("%c", uch);
+        printf("%c", str[i]);
     }
     printf("\n");
 }
-/*void clear_list_desc(datad* p)
+
+void service_list_desc(const string& str)
 {
-    if ( p == NULL)
-    {
-        return;
-    }
+    _u16_t service_id   = 0;
+    _u8_t  service_type = 0;
 
-    if ( p->_buf != NULL)
-    {
-       free(p->_buf);
-    }
+    _u16_t len = str.size();
+    _u16_t i   = 0;
 
-    datad* _next = NULL;
-    datad* _tmp = p->_next;
-    while(_tmp != NULL)
+    while( i < len)
     {
-        if (_tmp->_buf != NULL)
-        {
-            free(_tmp->_buf);
-        }
-        _next = _tmp->_next;
-        free(_tmp);
-        _tmp = _next;
+        service_id   = ((_u8_t)str[i] << 8) | (_u8_t)str[i+1];
+        service_type =  (_u8_t)str[i+2];
+
+        i += 3;
+
+        printf("    |service id   :%x"
+               "    |service type :%x\n", service_id, service_type);
     }
+    /*_u16_t new_orig_id  = 0;
+    _u16_t new_trans_id = 0;
+    _u16_t new_serv_id  = 0;
+
+    if (str.length() == 6)
+    {
+        new_orig_id  = ((_u8_t)str[0] << 8) | (_u8_t)str[1];
+        new_trans_id = ((_u8_t)str[2] << 8) | (_u8_t)str[3];
+        new_serv_id  = ((_u8_t)str[4] << 8) | (_u8_t)str[5];
+
+        printf("    |new original network id :%d"
+               "    |new transport stream id :%d"
+               "    |new service id          :%d\n\n", new_orig_id, new_trans_id, new_serv_id);
+
+    }*/
 }
 
-void clear_list_loop(tsloop* p)
-{
-    if ( p == NULL )
-    {
-        return;
-    }
 
-    tsloop* _next = NULL;
-    tsloop* _tmp = p->_next;
-
-    clear_list_desc(&p->_d1);
-
-    while(_tmp != NULL)
-    {
-        clear_list_desc(&_tmp->_d1);
-        _next = _tmp->_next;
-        free(_tmp);
-        _tmp = _next;
-    }
-}
-
-//@param
-//str - array data
-//n   - length byte
-//p   - &datad!!!
-int parse_descriptor(unsigned char* str, const uint16_t n, datad* p)
-{
-    uint8_t _len = 0;
-    datad*   next_p = p;
-
-    if ( next_p == NULL || str == NULL )
-    {
-        return -1;
-    }
-
-    do
-    {
-        next_p->_tag.u = (*(uint8_t*)str);
-        next_p->_len.u = (*(uint8_t*)str + 1);
-        str += 2;
-        _len += next_p->_len.u ;
-
-        next_p->_buf = allocate_uc(next_p->_len);
-        if ( next_p->_buf == NULL )
-        {
-            return -1;
-        }
-
-        memcpy(next_p->_buf, str, next_p->_lensection.u);
-        str += next_p->_len.u;
-
-        if (_len < n)
-        {
-            datad* tmp = (datad*)malloc(sizeof(datad));
-            if ( tmp == NULL)
-            {
-                clear_list_desc(p);
-                return -1;
-            }
-            next_p->_next = tmp;
-            next_p = next_p->_next;
-        }
-        else
-        {
-            break;
-        }
-    }while(1);
-
-    return 1;
-}
-
-int parse_trans_loop(unsigned char* str, const uint16_t n, tsloop* p)
-{section
-    int32_t len_all = 0;
-    int32_t len_parse = 0;
-    tsloop* p_next = p;
-    if (str == NULL || p_next == NULL)
-    {
-        return (-1);
-    }
-
-    do
-    {
-        p_next->_tra_id.u  = (*(uint16_t*)str + len_all);
-        p_next->_net_id.u  = (*(uint16_t*)str + len_all + 2);
-        p_next->_tra_len.u = (*(uint16_t*)str + len_all + 4) & MASK_SECTION_NET_LEN;
-        len_all += 6;
-
-        len_parse = parse_descriptor(str + len_all, p_next->_tra_len.u, &p_next->_d1);
-        if ( len_parse < 1)
-        {
-            clear_list_loop(p);
-            len_all = -1;
-            break;
-        }
-        else if( len_parse > 0 )
-        {
-            len_all += len_parse;
-        }
-
-        if ( len_all < n)
-        {
-            p_next->_next = (tsloop*)malloc(sizeof(tsloop));
-            if (p_next->_next == NULL)
-            {
-                clear_list_loop(p);
-                len_all = -1;
-                break;
-            }
-            p_next = p_next->_next;
-        }
-        else
-        {
-            break;
-        }
-
-    }while(1);
-
-    return (len_all);
-}*/

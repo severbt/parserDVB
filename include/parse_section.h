@@ -16,11 +16,10 @@ namespace DVB
 
         const bool isPidNIT( const _u16_t _pid);
         const bool sectionIsFull(buffer_section& _sect);
-        const bool parseHeadSection(hsection& hs);
+        const bool parseSection(std::string& stream, hsection& hs);
+        void       addSection(hsection& hs);
     private:
-        std::string m_buffer;
-        _u16_t      m_old_pid;
-
+        std::map< _u16_t, std::string > m_sections_stream;
         std::map< _u8_t, std::list<head_section>> m_tables;
     };
 }
