@@ -1,38 +1,67 @@
-.PHONY: clean
+# Name of output file
+PROG_NAME	:= parser
 
-#Name of output binary file;
-PROGRAM_NAME=parse
+# Compiler define
+CC 		?= gcc
 
-#List of sources files
-SOURCE_FILES:=$(wildcard ./src/*.cpp)
-OBJECT_FILES:=$(foreach tmp, $(SOURCE_FILES), $(tmp:.cpp=.o))
+# Quiet build by default
+QUIET 		?= @
+#DEBUG_ENABLED	?= n
 
-#Compiler
-CC=g++
-C_FLAGS= -g -std=C++11 -Wall -I./
-CLEAN=rm -rf
+# Make rules
+.PHONY: clean build checkbuilddirs
 
-QUIET ?= @
+# Project dir
+PROJ_DIR	:= $(shell pwd)
+# Source and include dirs (must be edit if differs from actual)
+SRC_DIRS	:= $(PROJ_DIR)/src
+INC_DIRS	:= $(PROJ_DIR)/include
+# Inner dirs defines
+BLD_DIR		:= $(PROJ_DIR)/build
+OBJ_DIR		:= $(BLD_DIR)/obj
+TARG_DIR	:= $(BLD_DIR)/bin
 
-#build exacutable file
-$(PROGRAM_NAME): $(OBJECT_FILES)
-	$(QUIET)$(CC) $(C_FLAGS) -o $@ $^
+# Paths and dirs
+SRC_FILES	:= $(foreach dirname, $(SRC_DIRS), $(wildcard $(dirname)/*.cpp))
+OBJ_FILES	:= $(foreach filename, $(notdir $(SRC_FILES)), $(OBJ_DIR)/$(filename:.cpp=.o))
+VPATH		:= $(sort $(SRC_DIRS) $(foreach srcfile, $(SRC_FILES), $(dir $(srcfile))))
+LOCAL_INCLUDES	:= $(foreach dirs, $(INC_DIRS), -I$(dirs))
+PROG_FULL_NAME	:= $(TARG_DIR)/$(PROG_NAME)
+CFLAGS		:= $(LOCAL_INCLUDES)
 
-#build all object file
-%.o: %.c
-ifeq ($(QUIET),@)
-	@echo Compile $<
-endif
-	$(QUIET)$(CC) $(C_FLAGS) -c $<
+#ifeq ($(DEBUG_ENABLED),y)
+#	CFLAGS += -g
+#endif
 
-.PHONY: clean
+CFLAGS += -std=c++11
 
+# Build all
+build:	checkbuilddirs $(PROG_FULL_NAME)
 
+# Output
+$(PROG_FULL_NAME): $(OBJ_FILES)
+	$(QUIET)$(CC) $(CFLAGS) -o $@ $^
+	@echo "Build complete"
+
+# Object files
+$(OBJ_DIR)/%.o: %.cpp
+	@echo "Compiling $(notdir $^)..."
+	$(QUIET)$(CC) -c $(CFLAGS) -o $@ $^
+
+# Clean all
 clean:
-	$(QUIET)$(CLEAN) $(OBJECT_FILES) $(PROGRAM_NAME)
+	$(QUIET)rm -f $(OBJ_FILES) $(PROG_FULL_NAME)
+	$(QUIET)rm -f $(BLD_DIR) -r
+	@echo "Project outputs cleaned"
 
-check:
-	@echo $(SOURCE_FILES)
-	@echo $(OBJECT_FILES)
+# Create dirs
+checkbuilddirs:
+	$(QUIET)mkdir -p $(BLD_DIR)
+	$(QUIET)mkdir -p $(OBJ_DIR)
+	$(QUIET)mkdir -p $(TARG_DIR)
+
+print:
+	@echo $(OBJ_DIR)
+	@echo $(OBJ_FILES)
 
 
