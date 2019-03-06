@@ -76,6 +76,11 @@ int DVB::parseDescriptor(const string& str)
                     service_list_desc(str.substr(i, size_d));
                     break;
                 }
+                case 0x43:
+                {
+                    satellite_delivery_sys_desc(str.substr(i, size_d);
+                    break;
+                }
                 default:
                 {
                     break;
@@ -139,4 +144,61 @@ void service_list_desc(const string& str)
     }*/
 }
 
+void satellite_delivery_sys_desc(const string& str)
+{
+    if ( str.size() != 11 )
+    {
+        printf("        Error - length != 11 bytes");
+        return;
+
+    }
+    _u8_t  frequency[8]            = {};
+    _u8_t  orbital_position[4]     = {};
+    _u8_t  west_east_flag          = ((_u8_t)str[6] & 0x80) >> 7;
+    _u8_t  polarization            = ((_u8_t)str[6] & 0x60) >> 5;
+    _u8_t  roll_off                = ((_u8_t)str[6] & 0x18) >> 3;
+    _u8_t  modulation_sys          = ((_u8_t)str[6] & 0x04) >> 2;
+    _u8_t  modulation_typ          =  (_u8_t)str[6] & 0x03;
+    _u8_t  symbol_rate[7]          = {};
+    _u8_t  FEC_inner               =  (_u8_t)str[10] & 0x0F;
+    _u8_t i                        = 0;
+
+
+    for( _u8_t j = 0; j < 4; j += 1)
+    {
+        for(_u8_t i = ; i < 2; i += 1)
+        {
+            if ( i == 0)
+                frequency[i] = (_u8_t)str[j] & 0xF0 >> 4;
+            else
+                frequency[i] =  (_u8_t)str[j] & 0x0F;
+        }
+    }
+
+    for( _u8_t j = 4; j < 6; j += 1)
+    {
+        i = 2*j;
+        orbital_position[i]   =  (_u8_t)str[j] & 0xF0 >> 4;
+        orbital_position[i+1] =  (_u8_t)str[j] & 0x0F;
+    }
+
+
+    //_u32_t frequency        = ((_u8_t)str[0] << 24) | ((_u8_t)str[1] << 16) | ((_u8_t)str[2] << 8) | (_u8_t)str[3];
+
+
+    for( _u8_t j = 7; j < 10; j += 1)
+    {
+        i = 2 * j;
+        symbol_rate[i]   =  (_u8_t)str[j] & 0xF0 >> 4;
+        symbol_rate[i+1] =  (_u8_t)str[j] & 0x0F;
+    }
+    symbol_rate[6]
+
+
+
+
+    _u32_t symbol_rate      = ((_u8_t)str[7] << 20) | ((_u8_t)str[8] << 12) | ((_u8_t)str[9] << 4) | ((_u8_t)str[10] & 0xF0) >> 4;
+    _u8_t  FEC_inner        =  (_u8_t)str[10] & 0x0F;
+
+}
 
